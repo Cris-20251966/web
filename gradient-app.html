@@ -1,0 +1,1427 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de Degradados - GradientCris</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --accent: #ec4899;
+        --dark-bg: #0f172a;
+        --card-bg: #1e293b;
+        --light-text: #f1f5f9;
+        --muted-text: #94a3b8;
+        --border: #334155;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1f35 100%);
+        color: var(--light-text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* ===== HEADER ===== */
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: slideDown 0.6s ease;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--secondary),
+          var(--accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .header p {
+        color: var(--muted-text);
+        font-size: 1rem;
+      }
+
+      /* ===== MAIN LAYOUT ===== */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      @media (max-width: 1024px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== PREVIEW ===== */
+      .preview-section {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 30px;
+        animation: fadeIn 0.8s ease 0.2s backwards;
+      }
+
+      .preview-box {
+        width: 100%;
+        height: 300px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s ease;
+        border: 2px solid var(--border);
+      }
+
+      .preview-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.3);
+      }
+
+      .gradient-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .info-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        padding: 15px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .info-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary);
+      }
+
+      .info-label {
+        font-size: 0.8rem;
+        color: var(--muted-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+
+      .info-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        color: var(--light-text);
+        word-break: break-all;
+      }
+
+      /* ===== CONTROL PANEL ===== */
+      .control-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 25px;
+        height: fit-content;
+        animation: fadeIn 0.8s ease 0.3s backwards;
+        position: sticky;
+        top: 20px;
+      }
+
+      .control-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted-text);
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      .control-group {
+        margin-bottom: 25px;
+      }
+
+      .control-label {
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        color: var(--light-text);
+        font-weight: 500;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--light-text);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-transform: capitalize;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+        border-color: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+      }
+
+      .btn.danger {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+        color: #fca5a5;
+      }
+
+      .btn.danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--light-text);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--light-text);
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+      }
+
+      .range-value {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        color: var(--muted-text);
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 50px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="color"]:hover {
+        border-color: var(--primary);
+      }
+
+      /* ===== COLOR STOPS ===== */
+      .colors-section {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid var(--border);
+      }
+
+      .color-stop {
+        display: grid;
+        grid-template-columns: 50px 1fr 60px 40px;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        animation: slideIn 0.3s ease;
+      }
+
+      .color-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .color-preview:hover {
+        transform: scale(1.05);
+      }
+
+      .color-hex {
+        font-family: "JetBrains Mono", monospace;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        padding: 8px 12px;
+        border-radius: 8px;
+        color: var(--light-text);
+        font-size: 0.9rem;
+      }
+
+      .color-stop-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        color: var(--light-text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .icon-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+        border-color: var(--primary);
+        transform: scale(1.1);
+      }
+
+      /* ===== PRESET SECTION ===== */
+      .presets-section {
+        margin-top: 60px;
+      }
+
+      .presets-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: var(--light-text);
+      }
+
+      .presets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .preset-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.6s ease;
+      }
+
+      .preset-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+      }
+
+      .preset-preview {
+        width: 100%;
+        height: 120px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      .preset-info {
+        padding: 15px;
+      }
+
+      .preset-name {
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .preset-code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        color: var(--muted-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ===== COLOR LIBRARY ===== */
+      .color-library-section {
+        margin-top: 60px;
+        padding-bottom: 60px;
+      }
+
+      .color-categories {
+        display: grid;
+        gap: 40px;
+      }
+
+      .color-category {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 25px;
+        animation: fadeIn 0.6s ease;
+      }
+
+      .category-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--light-text);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+
+      .color-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        animation: slideIn 0.3s ease;
+      }
+
+      .color-item:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+      }
+
+      .color-swatch {
+        width: 100%;
+        height: 80px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 8px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .color-item:hover .color-swatch {
+        height: 100px;
+      }
+
+      .color-copy-hint {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .color-item:hover .color-copy-hint {
+        opacity: 1;
+      }
+
+      .color-details {
+        padding: 12px;
+        text-align: center;
+      }
+
+      .color-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--light-text);
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .color-codes {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--muted-text);
+      }
+
+      .color-hex-small {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .color-rgb-small {
+        display: block;
+        font-size: 0.7rem;
+      }
+
+      /* ===== UTILITIES ===== */
+      .copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: var(--primary);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+      }
+
+      .copy-btn.copied {
+        background: #10b981;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #10b981;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        font-weight: 500;
+        animation: slideUp 0.4s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+      }
+
+      /* ===== ANIMATIONS ===== */
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .control-panel {
+          position: static;
+        }
+
+        .gradient-info {
+          grid-template-columns: 1fr;
+        }
+
+        .presets-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        .preview-box {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🎨 Generador de Degradados</h1>
+        <p>Crea hermosos degradados y obtén el código CSS listo para usar</p>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-grid">
+        <!-- Left: Preview & Info -->
+        <div class="preview-section">
+          <div class="preview-box" id="previewBox"></div>
+
+          <div class="gradient-info">
+            <div class="info-item">
+              <div class="info-label">Tipo de Degradado</div>
+              <div class="info-value" id="typeInfo">Linear (135deg)</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Ángulo</div>
+              <div class="info-value" id="angleInfo">135°</div>
+            </div>
+          </div>
+
+          <div class="gradient-info">
+            <div class="info-item" style="grid-column: 1/-1">
+              <div class="info-label">CSS Code</div>
+              <div class="info-value" id="cssCode">
+                background: linear-gradient(135deg, #6366f1, #a855f7);
+              </div>
+            </div>
+          </div>
+
+          <button class="copy-btn" id="copyBtn">
+            <span>📋</span> Copiar CSS
+          </button>
+        </div>
+
+        <!-- Right: Controls -->
+        <div class="control-panel">
+          <div class="control-title">⚙️ Controles</div>
+
+          <!-- Gradient Type -->
+          <div class="control-group">
+            <label class="control-label">Tipo de Degradado</label>
+            <div class="button-group">
+              <button class="btn active" id="linearBtn" data-type="linear">
+                Linear
+              </button>
+              <button class="btn" id="radialBtn" data-type="radial">
+                Radial
+              </button>
+            </div>
+          </div>
+
+          <!-- Angle Control -->
+          <div class="control-group" id="angleControl">
+            <label class="control-label">Ángulo</label>
+            <input
+              type="range"
+              id="angleSlider"
+              min="0"
+              max="360"
+              value="135"
+              step="5"
+            />
+            <div class="range-value">
+              <span id="angleValue">135°</span>
+              <button class="icon-btn" id="resetAngleBtn">↻</button>
+            </div>
+          </div>
+
+          <!-- Color Controls -->
+          <div class="control-group">
+            <label class="control-label">Primer Color</label>
+            <input type="color" id="color1" value="#6366f1" />
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Segundo Color</label>
+            <input type="color" id="color2" value="#a855f7" />
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="button-group">
+            <button class="btn" id="addColorBtn">➕ Agregar Color</button>
+            <button class="btn danger" id="resetBtn">🔄 Resetear</button>
+          </div>
+
+          <!-- Colors Section -->
+          <div class="colors-section" id="colorsSection"></div>
+        </div>
+      </div>
+
+      <!-- Presets Section -->
+      <div class="presets-section">
+        <h2 class="presets-title">🎭 Degradados Predefinidos</h2>
+        <div class="presets-grid" id="presetsGrid"></div>
+      </div>
+
+      <!-- Color Library Section -->
+      <div class="color-library-section">
+        <h2 class="presets-title">🎨 Librería de Colores</h2>
+        <div class="color-categories" id="colorLibraryContainer"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" style="display: none"></div>
+
+    <script>
+      // ===== STATE =====
+      let gradientState = {
+        type: "linear",
+        angle: 135,
+        colors: [
+          { id: "1", hex: "#6366f1", stop: 0 },
+          { id: "2", hex: "#a855f7", stop: 100 },
+        ],
+      };
+
+      const presets = [
+        // Clásicos
+        {
+          name: "Sunset",
+          colors: ["#ff6b6b", "#ffa502", "#ffd93d"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Ocean",
+          colors: ["#0066cc", "#00ccff", "#00ffff"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Forest",
+          colors: ["#134e5e", "#16a085"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Neon",
+          colors: ["#ff006e", "#8338ec", "#3a86ff"],
+          type: "linear",
+          angle: 180,
+        },
+        {
+          name: "Pastel",
+          colors: ["#ffa8a8", "#ffc4e1", "#ffe5f0"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Dark Mode",
+          colors: ["#1a1a2e", "#16213e", "#0f3460"],
+          type: "linear",
+          angle: 90,
+        },
+        // Naturales
+        {
+          name: "Aurora",
+          colors: ["#00ff88", "#00ffff", "#0088ff"],
+          type: "linear",
+          angle: 120,
+        },
+        {
+          name: "Puesta Tropical",
+          colors: ["#ff4e50", "#f9a825", "#ffd700"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Bosque Profundo",
+          colors: ["#0d3b0d", "#1e7e1e", "#4a9d4a"],
+          type: "linear",
+          angle: 180,
+        },
+        {
+          name: "Atardecer Rosa",
+          colors: ["#ff6b9d", "#c06c84", "#6c5b7b"],
+          type: "linear",
+          angle: 135,
+        },
+        // Vibrantes
+        {
+          name: "Fuego",
+          colors: ["#ff0000", "#ff6b00", "#ffd700"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Arcoíris",
+          colors: [
+            "#ff0000",
+            "#ff7f00",
+            "#ffff00",
+            "#00ff00",
+            "#0000ff",
+            "#4b0082",
+            "#9400d3",
+          ],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Plasma",
+          colors: ["#ff1654", "#ff7d5f", "#ffcf00"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Lava",
+          colors: ["#ff0000", "#ff6b1b", "#ffaa00"],
+          type: "linear",
+          angle: 180,
+        },
+        // Cool & Fresh
+        {
+          name: "Hielo",
+          colors: ["#e0f7ff", "#80d8ff", "#00b8d4"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Menta",
+          colors: ["#a8edea", "#fed6e3", "#78e08f"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Cielo Azul",
+          colors: ["#87ceeb", "#4a90e2", "#2e5c8a"],
+          type: "linear",
+          angle: 180,
+        },
+        {
+          name: "Agua Marina",
+          colors: ["#00d2d3", "#55a630", "#54596e"],
+          type: "linear",
+          angle: 45,
+        },
+        // Gradientes Radiales
+        {
+          name: "Radiante Púrpura",
+          colors: ["#9d50bb", "#6e48aa"],
+          type: "radial",
+          angle: 0,
+        },
+        {
+          name: "Radiante Naranja",
+          colors: ["#ff9a56", "#ff6a88"],
+          type: "radial",
+          angle: 0,
+        },
+        {
+          name: "Radiante Verde",
+          colors: ["#11998e", "#38ef7d"],
+          type: "radial",
+          angle: 0,
+        },
+        // Profesionales
+        {
+          name: "Elegancia Gris",
+          colors: ["#434343", "#000000"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Corporativo Azul",
+          colors: ["#0033ff", "#0099cc", "#00cccc"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Minimalista",
+          colors: ["#ffffff", "#cccccc", "#666666"],
+          type: "linear",
+          angle: 180,
+        },
+        {
+          name: "Premium Negro",
+          colors: ["#1a1a1a", "#2d2d2d", "#4d4d4d"],
+          type: "linear",
+          angle: 45,
+        },
+        // Creativos
+        {
+          name: "Dulce Caramelo",
+          colors: ["#ff6b9d", "#ffaa55", "#ff6b95"],
+          type: "linear",
+          angle: 120,
+        },
+        {
+          name: "Mariposa",
+          colors: ["#ff6ec7", "#a78bfa", "#60a5fa"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Galaxia",
+          colors: ["#0a0a0a", "#4a148c", "#880e4f", "#ff6f00"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Nebulosa",
+          colors: ["#2c003e", "#5d0a6f", "#a60f96"],
+          type: "linear",
+          angle: 45,
+        },
+        // Pasteles Suaves
+        {
+          name: "Algodón de Azúcar",
+          colors: ["#ffc0cb", "#ffb6d9", "#ffa8e6"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Lavanda",
+          colors: ["#e6d9ff", "#d4a5ff", "#c28dff"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Crema",
+          colors: ["#fff5e1", "#ffe8cc", "#ffd99d"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Helado Vainilla",
+          colors: ["#f5deb3", "#f0e68c", "#eee8aa"],
+          type: "linear",
+          angle: 180,
+        },
+        // Intensos
+        {
+          name: "Volcán",
+          colors: ["#4a0e0e", "#8b0000", "#ff4500"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Eléctrico",
+          colors: ["#00ff00", "#ffff00", "#ff0000"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Tormenta",
+          colors: ["#2c3e50", "#3498db", "#1abc9c"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Magma",
+          colors: ["#ff0000", "#ff7700", "#ffff00", "#ffff00"],
+          type: "linear",
+          angle: 180,
+        },
+        // Tonos Tierra
+        {
+          name: "Desierto",
+          colors: ["#d2691e", "#cd853f", "#daa520"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Café",
+          colors: ["#6f4e37", "#8b6f47", "#a0826d"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Terracota",
+          colors: ["#cd5c5c", "#dc143c", "#ff6347"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Arena",
+          colors: ["#f4a460", "#daa520", "#bdb76b"],
+          type: "linear",
+          angle: 135,
+        },
+        // Gradientes Suaves
+        {
+          name: "Suave Azul",
+          colors: ["#b3d9ff", "#80c0ff", "#4da3ff"],
+          type: "linear",
+          angle: 180,
+        },
+        {
+          name: "Suave Rosa",
+          colors: ["#ffb3d9", "#ff99cc", "#ff80bf"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Suave Verde",
+          colors: ["#b3ffb3", "#80ff80", "#4dff4d"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Suave Amarillo",
+          colors: ["#ffffb3", "#ffff80", "#ffff4d"],
+          type: "linear",
+          angle: 135,
+        },
+        // Especiales
+        {
+          name: "Piscina",
+          colors: ["#00d4ff", "#0099ff", "#0066ff"],
+          type: "linear",
+          angle: 90,
+        },
+        {
+          name: "Flor Sakura",
+          colors: ["#ffb7c5", "#ffa7ba", "#ff9aae"],
+          type: "linear",
+          angle: 135,
+        },
+        {
+          name: "Medianoche",
+          colors: ["#0a0e27", "#1a1a3e", "#2d1b69"],
+          type: "linear",
+          angle: 45,
+        },
+        {
+          name: "Amanecer",
+          colors: ["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"],
+          type: "linear",
+          angle: 180,
+        },
+      ];
+
+      // Color Library
+      const colorLibrary = {
+        Rojos: [
+          { name: "Rojo Fuerte", hex: "#ff0000", rgb: "255, 0, 0" },
+          { name: "Rojo Oscuro", hex: "#8b0000", rgb: "139, 0, 0" },
+          { name: "Rojo Claro", hex: "#ff6347", rgb: "255, 99, 71" },
+          { name: "Rojo Ladrillo", hex: "#cd5c5c", rgb: "205, 92, 92" },
+          { name: "Rojo Indio", hex: "#cd5c5c", rgb: "205, 92, 92" },
+          { name: "Crimson", hex: "#dc143c", rgb: "220, 20, 60" },
+          { name: "Rojo Fuego", hex: "#ff4500", rgb: "255, 69, 0" },
+        ],
+        Naranjas: [
+          { name: "Naranja", hex: "#ffa500", rgb: "255, 165, 0" },
+          { name: "Naranja Oscuro", hex: "#ff8c00", rgb: "255, 140, 0" },
+          { name: "Naranja Rojo", hex: "#ff4500", rgb: "255, 69, 0" },
+          { name: "Coral", hex: "#ff7f50", rgb: "255, 127, 80" },
+          { name: "Melocotón", hex: "#ffaa55", rgb: "255, 170, 85" },
+          { name: "Naranja Suave", hex: "#ffa500", rgb: "255, 165, 0" },
+        ],
+        Amarillos: [
+          { name: "Amarillo", hex: "#ffff00", rgb: "255, 255, 0" },
+          { name: "Amarillo Claro", hex: "#ffffe0", rgb: "255, 255, 224" },
+          { name: "Amarillo Oscuro", hex: "#daa520", rgb: "218, 165, 32" },
+          { name: "Oro", hex: "#ffd700", rgb: "255, 215, 0" },
+          { name: "Khaki", hex: "#f0e68c", rgb: "240, 230, 140" },
+          { name: "Limón", hex: "#ffff00", rgb: "255, 255, 0" },
+          { name: "Luz Goldenrod", hex: "#fafad2", rgb: "250, 250, 210" },
+        ],
+        Verdes: [
+          { name: "Verde", hex: "#008000", rgb: "0, 128, 0" },
+          { name: "Verde Claro", hex: "#90ee90", rgb: "144, 238, 144" },
+          { name: "Verde Oscuro", hex: "#006400", rgb: "0, 100, 0" },
+          { name: "Verde Bosque", hex: "#228b22", rgb: "34, 139, 34" },
+          { name: "Verde Lima", hex: "#00ff00", rgb: "0, 255, 0" },
+          { name: "Aguamarina", hex: "#7fffd4", rgb: "127, 255, 212" },
+          { name: "Menta", hex: "#98ff98", rgb: "152, 255, 152" },
+          { name: "Verde Azulado", hex: "#008080", rgb: "0, 128, 128" },
+        ],
+        "Cian/Azul": [
+          { name: "Cian", hex: "#00ffff", rgb: "0, 255, 255" },
+          { name: "Cian Claro", hex: "#e0ffff", rgb: "224, 255, 255" },
+          { name: "Cian Oscuro", hex: "#008b8b", rgb: "0, 139, 139" },
+          { name: "Turquesa", hex: "#40e0d0", rgb: "64, 224, 208" },
+          { name: "Medianoche Azul", hex: "#191970", rgb: "25, 25, 112" },
+          { name: "Azul Marino", hex: "#000080", rgb: "0, 0, 128" },
+          { name: "Azul Acero", hex: "#4682b4", rgb: "70, 130, 180" },
+        ],
+        Azules: [
+          { name: "Azul", hex: "#0000ff", rgb: "0, 0, 255" },
+          { name: "Azul Claro", hex: "#add8e6", rgb: "173, 216, 230" },
+          { name: "Azul Oscuro", hex: "#00008b", rgb: "0, 0, 139" },
+          { name: "Azul Dodger", hex: "#1e90ff", rgb: "30, 144, 255" },
+          { name: "Azul Cielo", hex: "#87ceeb", rgb: "135, 206, 235" },
+          { name: "Azul Profundo", hex: "#00bfff", rgb: "0, 191, 255" },
+          { name: "Azul Real", hex: "#4169e1", rgb: "65, 105, 225" },
+        ],
+        Púrpuras: [
+          { name: "Púrpura", hex: "#800080", rgb: "128, 0, 128" },
+          { name: "Púrpura Oscuro", hex: "#301934", rgb: "48, 25, 52" },
+          { name: "Púrpura Claro", hex: "#dda0dd", rgb: "221, 160, 221" },
+          { name: "Orquídea", hex: "#da70d6", rgb: "218, 112, 214" },
+          { name: "Violeta", hex: "#ee82ee", rgb: "238, 130, 238" },
+          { name: "Magenta", hex: "#ff00ff", rgb: "255, 0, 255" },
+          { name: "Índigo", hex: "#4b0082", rgb: "75, 0, 130" },
+        ],
+        Rosas: [
+          { name: "Rosa", hex: "#ffc0cb", rgb: "255, 192, 203" },
+          { name: "Rosa Claro", hex: "#ffb6d9", rgb: "255, 182, 217" },
+          { name: "Rosa Profundo", hex: "#ff1493", rgb: "255, 20, 147" },
+          { name: "Rosa Pálido", hex: "#ffdab9", rgb: "255, 218, 185" },
+          { name: "Rosa Hot", hex: "#ff69b4", rgb: "255, 105, 180" },
+          { name: "Violeta Rojo", hex: "#d63384", rgb: "214, 51, 132" },
+        ],
+        Neutros: [
+          { name: "Blanco", hex: "#ffffff", rgb: "255, 255, 255" },
+          { name: "Gris Claro", hex: "#d3d3d3", rgb: "211, 211, 211" },
+          { name: "Gris", hex: "#808080", rgb: "128, 128, 128" },
+          { name: "Gris Oscuro", hex: "#a9a9a9", rgb: "169, 169, 169" },
+          { name: "Negro", hex: "#000000", rgb: "0, 0, 0" },
+          { name: "Plata", hex: "#c0c0c0", rgb: "192, 192, 192" },
+          { name: "Humo", hex: "#708090", rgb: "112, 128, 144" },
+        ],
+        Tierra: [
+          { name: "Marrón", hex: "#a52a2a", rgb: "165, 42, 42" },
+          { name: "Marrón Claro", hex: "#d2b48c", rgb: "210, 180, 140" },
+          { name: "Marrón Oscuro", hex: "#8b4513", rgb: "139, 69, 19" },
+          { name: "Café", hex: "#6f4e37", rgb: "111, 78, 55" },
+          { name: "Chocolate", hex: "#d2691e", rgb: "210, 105, 30" },
+          { name: "Terracota", hex: "#cd5c5c", rgb: "205, 92, 92" },
+          { name: "Arena", hex: "#f4a460", rgb: "244, 164, 96" },
+        ],
+      };
+
+      // ===== FUNCTIONS =====
+      function updateGradient() {
+        const css = generateCSS();
+        const previewBox = document.getElementById("previewBox");
+        previewBox.style.background = css;
+
+        document.getElementById("cssCode").textContent = css + ";";
+        document.getElementById("typeInfo").textContent =
+          gradientState.type === "linear"
+            ? `Linear (${gradientState.angle}deg)`
+            : "Radial";
+        document.getElementById("angleInfo").textContent =
+          gradientState.angle + "°";
+      }
+
+      function generateCSS() {
+        const colorStops = gradientState.colors
+          .map((c) => `${c.hex} ${c.stop}%`)
+          .join(", ");
+
+        if (gradientState.type === "linear") {
+          return `linear-gradient(${gradientState.angle}deg, ${colorStops})`;
+        } else {
+          return `radial-gradient(circle, ${colorStops})`;
+        }
+      }
+
+      function renderColorStops() {
+        const section = document.getElementById("colorsSection");
+        section.innerHTML = "";
+
+        if (gradientState.colors.length > 2) {
+          section.innerHTML +=
+            '<div class="control-label">Colores Adicionales</div>';
+        }
+
+        gradientState.colors.forEach((color, index) => {
+          if (index > 1) {
+            const div = document.createElement("div");
+            div.className = "color-stop";
+            div.innerHTML = `
+                        <div class="color-preview" style="background: ${color.hex};" onclick="document.getElementById('extraColor${index}').click();"></div>
+                        <input type="color" id="extraColor${index}" value="${color.hex}" style="display: none;" onchange="updateExtraColor(${index}, this.value)">
+                        <span class="color-hex">${color.hex}</span>
+                        <button class="icon-btn danger" onclick="removeColor(${index})">🗑️</button>
+                    `;
+            section.appendChild(div);
+          }
+        });
+      }
+
+      function updateExtraColor(index, value) {
+        gradientState.colors[index].hex = value;
+        updateGradient();
+      }
+
+      function removeColor(index) {
+        gradientState.colors.splice(index, 1);
+        updateGradient();
+        renderColorStops();
+      }
+
+      function copyToClipboard() {
+        const css = `background: ${generateCSS()};`;
+        navigator.clipboard.writeText(css).then(() => {
+          showToast("¡Copiado al portapapeles!");
+          const btn = document.getElementById("copyBtn");
+          btn.classList.add("copied");
+          setTimeout(() => btn.classList.remove("copied"), 2000);
+        });
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
+
+      function loadPreset(preset) {
+        gradientState.type = preset.type;
+        gradientState.angle = preset.angle;
+        gradientState.colors = preset.colors.map((hex, i) => ({
+          id: String(i),
+          hex: hex,
+          stop: Math.round((i / (preset.colors.length - 1)) * 100),
+        }));
+
+        document
+          .getElementById("linearBtn")
+          .classList.toggle("active", preset.type === "linear");
+        document
+          .getElementById("radialBtn")
+          .classList.toggle("active", preset.type === "radial");
+        document.getElementById("angleSlider").value = preset.angle;
+        document.getElementById("angleValue").textContent = preset.angle + "°";
+        document.getElementById("angleControl").style.display =
+          preset.type === "linear" ? "block" : "none";
+
+        updateGradient();
+        renderColorStops();
+        showToast(`Degradado "${preset.name}" cargado`);
+      }
+
+      function renderPresets() {
+        const grid = document.getElementById("presetsGrid");
+        presets.forEach((preset) => {
+          const card = document.createElement("div");
+          card.className = "preset-card";
+          const colors = preset.colors.join(", ");
+          const gradient =
+            preset.type === "linear"
+              ? `linear-gradient(${preset.angle}deg, ${colors})`
+              : `radial-gradient(circle, ${colors})`;
+
+          card.innerHTML = `
+                    <div class="preset-preview" style="background: ${gradient};"></div>
+                    <div class="preset-info">
+                        <div class="preset-name">${preset.name}</div>
+                        <div class="preset-code">${gradient}</div>
+                    </div>
+                `;
+          card.onclick = () => loadPreset(preset);
+          grid.appendChild(card);
+        });
+      }
+
+      function renderColorLibrary() {
+        const container = document.getElementById("colorLibraryContainer");
+        container.innerHTML = "";
+
+        Object.entries(colorLibrary).forEach(([categoryName, colors]) => {
+          const categoryDiv = document.createElement("div");
+          categoryDiv.className = "color-category";
+
+          const titleDiv = document.createElement("div");
+          titleDiv.className = "category-title";
+          titleDiv.textContent = "🎨 " + categoryName;
+
+          const gridDiv = document.createElement("div");
+          gridDiv.className = "color-grid";
+
+          colors.forEach((color) => {
+            const colorItem = document.createElement("div");
+            colorItem.className = "color-item";
+
+            colorItem.innerHTML = `
+              <div class="color-swatch" style="background-color: ${color.hex};">
+                <div class="color-copy-hint">Click para copiar</div>
+              </div>
+              <div class="color-details">
+                <div class="color-name">${color.name}</div>
+                <div class="color-codes">
+                  <span class="color-hex-small">${color.hex}</span>
+                  <span class="color-rgb-small">rgb(${color.rgb})</span>
+                </div>
+              </div>
+            `;
+
+            colorItem.addEventListener("click", () => {
+              navigator.clipboard.writeText(color.hex);
+              showToast(`✓ ${color.hex} copiado`);
+            });
+
+            gridDiv.appendChild(colorItem);
+          });
+
+          categoryDiv.appendChild(titleDiv);
+          categoryDiv.appendChild(gridDiv);
+          container.appendChild(categoryDiv);
+        });
+      }
+
+      // ===== EVENT LISTENERS =====
+      document
+        .getElementById("linearBtn")
+        .addEventListener("click", function () {
+          gradientState.type = "linear";
+          document.getElementById("angleControl").style.display = "block";
+          this.classList.add("active");
+          document.getElementById("radialBtn").classList.remove("active");
+          updateGradient();
+        });
+
+      document
+        .getElementById("radialBtn")
+        .addEventListener("click", function () {
+          gradientState.type = "radial";
+          document.getElementById("angleControl").style.display = "none";
+          this.classList.add("active");
+          document.getElementById("linearBtn").classList.remove("active");
+          updateGradient();
+        });
+
+      document
+        .getElementById("angleSlider")
+        .addEventListener("input", function () {
+          gradientState.angle = parseInt(this.value);
+          document.getElementById("angleValue").textContent =
+            gradientState.angle + "°";
+          updateGradient();
+        });
+
+      document
+        .getElementById("resetAngleBtn")
+        .addEventListener("click", function () {
+          gradientState.angle = 135;
+          document.getElementById("angleSlider").value = 135;
+          document.getElementById("angleValue").textContent = "135°";
+          updateGradient();
+        });
+
+      document.getElementById("color1").addEventListener("change", function () {
+        gradientState.colors[0].hex = this.value;
+        updateGradient();
+      });
+
+      document.getElementById("color2").addEventListener("change", function () {
+        gradientState.colors[1].hex = this.value;
+        updateGradient();
+      });
+
+      document
+        .getElementById("addColorBtn")
+        .addEventListener("click", function () {
+          const newColor = {
+            id: String(gradientState.colors.length),
+            hex: "#ff0000",
+            stop: 50,
+          };
+          gradientState.colors.push(newColor);
+          updateGradient();
+          renderColorStops();
+          showToast("Color nuevo agregado");
+        });
+
+      document
+        .getElementById("resetBtn")
+        .addEventListener("click", function () {
+          gradientState = {
+            type: "linear",
+            angle: 135,
+            colors: [
+              { id: "1", hex: "#6366f1", stop: 0 },
+              { id: "2", hex: "#a855f7", stop: 100 },
+            ],
+          };
+          document.getElementById("color1").value = "#6366f1";
+          document.getElementById("color2").value = "#a855f7";
+          document.getElementById("angleSlider").value = 135;
+          document.getElementById("linearBtn").classList.add("active");
+          document.getElementById("radialBtn").classList.remove("active");
+          updateGradient();
+          renderColorStops();
+          showToast("Degradado reseteado");
+        });
+
+      document
+        .getElementById("copyBtn")
+        .addEventListener("click", copyToClipboard);
+
+      // ===== INITIALIZE =====
+      updateGradient();
+      renderColorStops();
+      renderPresets();
+      renderColorLibrary();
+    </script>
+  </body>
+</html>
